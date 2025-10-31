@@ -1,0 +1,11 @@
+# Ne pas déployer ces fichiers sur Railway
+.env
+.env.example
+data.json
+*.log
+.git
+.DS_Store
+node_modules
+README.md
+DEMARRAGE_RAPIDE.md
+GUIDE_ENREGISTREMENT_COMMANDES.md
