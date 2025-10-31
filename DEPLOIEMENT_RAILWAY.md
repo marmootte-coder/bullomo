@@ -81,7 +81,7 @@ C'est l'équivalent du fichier `.env` mais sur Railway.
 ### Exemple de configuration :
 
 ```
-DISCORD_TOKEN=MTIzNDU2Nzg5MDEyMzQ1Njc4OQ.AbCdEf.GhIjKlMnOpQrStUvWxYz123456789
+DISCORD_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 DISCORD_CLIENT_ID=1234567890123456789
 NOTIFICATION_CHANNEL_ID=9876543210987654321
 NOTIFICATION_HOUR=9
