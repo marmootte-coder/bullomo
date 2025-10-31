@@ -39,8 +39,21 @@ const commands = [
     description: 'Recevoir une affirmation de soutien',
   },
   {
+    name: 'changer-mon-objectif',
+    description: 'Changer ton objectif mensuel de mots',
+    options: [
+      {
+        name: 'nombre',
+        description: 'Nouveau nombre de mots à atteindre',
+        type: 4, // INTEGER
+        required: true,
+        min_value: 1,
+      },
+    ],
+  },
+  {
     name: 'reset',
-    description: 'Réinitialiser tes données',
+    description: 'Réinitialiser complètement tes données',
   },
   {
     name: 'aide',
