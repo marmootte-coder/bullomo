@@ -109,12 +109,41 @@ Si vous voyez ça : **BRAVO ! Votre bot est en ligne !** 🎉
 
 ---
 
-## 🧪 Étape 5 : Tester
+## 🧪 Étape 5 : Inviter le bot sur votre serveur
 
-1. Allez sur votre serveur Discord
-2. Tapez `/` dans un canal
-3. Vous devriez voir les commandes du bot !
+### 🎯 IMPORTANT : Le bon lien d'invitation
+
+**⚠️ Problème courant** : Si vous ajoutez le bot via "Clic droit sur le profil → Ajouter l'application", seules les **commandes** seront ajoutées, **pas le bot lui-même**. Du coup, le bot n'apparaît pas dans la liste des membres et les utilisateurs ne peuvent pas lui envoyer de messages privés.
+
+**✅ Solution : Créer le bon lien d'invitation**
+
+1. Allez sur https://discord.com/developers/applications
+2. Sélectionnez votre bot
+3. Cliquez sur "OAuth2" dans le menu de gauche
+4. Cliquez sur "URL Generator"
+5. **Cochez ces deux scopes OBLIGATOIRES** :
+   - ✅ **bot** (pour que le bot soit présent sur le serveur)
+   - ✅ **applications.commands** (pour les commandes slash)
+6. Plus bas, cochez les permissions nécessaires :
+   - ✅ Send Messages
+   - ✅ Send Messages in Threads
+   - ✅ Embed Links
+   - ✅ Read Message History
+7. Copiez l'URL générée en bas
+8. Partagez **cette URL** pour inviter le bot correctement
+
+**Exemple d'URL correcte** :
+```
+https://discord.com/oauth2/authorize?client_id=VOTRE_CLIENT_ID&permissions=274878286848&scope=bot%20applications.commands
+```
+
+### 🧪 Tester le bot
+
+1. Utilisez l'URL d'invitation créée ci-dessus pour inviter le bot
+2. Vérifiez que le bot apparaît dans la liste des membres (il devrait avoir un badge "BOT")
+3. Tapez `/` dans un canal → vous devriez voir les commandes !
 4. Essayez `/aide` pour vérifier que tout fonctionne
+5. Testez l'envoi de message privé au bot (pour consulter ses stats discrètement 💜)
 
 ---
 

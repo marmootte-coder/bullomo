@@ -74,11 +74,20 @@ function getUser(userId) {
 // Fonction pour calculer les stats
 function calculateStats(user) {
   const today = new Date().toISOString().split('T')[0];
-  const startDate = new Date(user.startDate);
   const currentDate = new Date();
-  const daysElapsed = Math.floor((currentDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
-  const daysRemaining = daysInMonth - daysElapsed;
+
+  // Toujours partir du 1er du mois en cours comme date de début
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+
+  // Calculer le dernier jour du mois en cours
+  const lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), lastDayOfMonth);
+
+  // Jours écoulés depuis le début du mois (pas depuis startDate)
+  const daysElapsed = Math.floor((currentDate - startOfMonth) / (1000 * 60 * 60 * 24)) + 1;
+
+  // Jours restants jusqu'à la fin du mois
+  const daysRemaining = Math.max(0, Math.floor((endOfMonth - currentDate) / (1000 * 60 * 60 * 24)));
 
   const wordsRemaining = Math.max(0, user.goal - user.totalWords);
   const wordsPerDay = daysRemaining > 0 ? Math.ceil(wordsRemaining / daysRemaining) : 0;
@@ -191,16 +200,81 @@ async function handleAffirmation(interaction) {
   await interaction.reply(`💜 ${affirmation}`);
 }
 
+// Commande pour changer son objectif
+async function handleChangeGoal(interaction) {
+  const newGoal = interaction.options.getInteger('nombre');
+  const userId = interaction.user.id;
+
+  const user = getUser(userId);
+  const oldGoal = user.goal;
+
+  // Détecter si l'objectif précédent était atteint
+  const goalAchieved = oldGoal > 0 && user.totalWords >= oldGoal;
+
+  // Mettre à jour l'objectif
+  user.goal = newGoal;
+  saveData(data);
+
+  const embed = new EmbedBuilder()
+    .setColor(goalAchieved ? 0xFFD700 : 0x9B59B6);
+
+  if (goalAchieved) {
+    // Message de félicitations si objectif atteint
+    embed
+      .setTitle('🎉 BRAVO ! Objectif atteint !')
+      .setDescription(`Tu avais réussi ton objectif de ${oldGoal} mots !\n\nMaintenant, cap sur un nouvel horizon : ${newGoal} mots ! Tu es incroyable ! 💜`)
+      .setFooter({ text: 'Continue à écouter tes besoins, tu gères ! ✨' });
+  } else {
+    // Message d'encouragement sur l'adaptation
+    embed
+      .setTitle('💜 Tu prends soin de toi !')
+      .setDescription(`Ton nouvel objectif : ${newGoal} mots.\n\nChanger d'objectif, c'est s'adapter à ses besoins réels. C'est une force, pas une faiblesse. Tu fais exactement ce qu'il faut pour toi ! 🌟`)
+      .addFields(
+        { name: 'Progression actuelle', value: `${user.totalWords} mots`, inline: true },
+        { name: 'Nouvel objectif', value: `${newGoal} mots`, inline: true }
+      )
+      .setFooter({ text: 'Être à l\'écoute de soi, c\'est précieux ! 💜' });
+  }
+
+  await interaction.reply({ embeds: [embed] });
+}
+
 // Commande pour réinitialiser
 async function handleReset(interaction) {
   const userId = interaction.user.id;
-  if (data.users[userId]) {
-    delete data.users[userId];
-    saveData(data);
-    await interaction.reply("Tes données ont été réinitialisées. Prêt·e pour un nouveau départ ! 🌟");
-  } else {
+
+  if (!data.users[userId]) {
     await interaction.reply("Tu n'as pas encore de données à réinitialiser !");
+    return;
   }
+
+  const user = data.users[userId];
+
+  // Détecter si l'objectif était atteint
+  const goalAchieved = user.goal > 0 && user.totalWords >= user.goal;
+
+  // Supprimer les données
+  delete data.users[userId];
+  saveData(data);
+
+  const embed = new EmbedBuilder()
+    .setColor(goalAchieved ? 0xFFD700 : 0x00CED1);
+
+  if (goalAchieved) {
+    // Message de félicitations si objectif atteint
+    embed
+      .setTitle('🎊 BRAVO ! Objectif accompli !')
+      .setDescription(`Tu as réussi ton objectif de ${user.goal} mots !\n\nTu es libre maintenant de repartir sur une nouvelle aventure. Tu es incroyable ! 💜`)
+      .setFooter({ text: 'Célèbre cette victoire, tu le mérites ! ✨' });
+  } else {
+    // Message pour nouveau départ
+    embed
+      .setTitle('🌟 Nouveau départ')
+      .setDescription('Tes données ont été réinitialisées.\n\nParfois, recommencer à zéro est exactement ce dont on a besoin. Prêt·e pour une nouvelle aventure ? 💜')
+      .setFooter({ text: 'Chaque nouveau départ est courageux ! 🌱' });
+  }
+
+  await interaction.reply({ embeds: [embed] });
 }
 
 // Commande d'aide
@@ -213,8 +287,9 @@ async function handleHelp(interaction) {
       { name: '/objectif', value: 'Définir ton objectif mensuel de mots' },
       { name: '/mots', value: 'Enregistrer tes mots écrits aujourd\'hui' },
       { name: '/stats', value: 'Voir tes statistiques et progression' },
+      { name: '/changer-mon-objectif', value: 'Changer ton objectif en cours de route' },
       { name: '/affirmation', value: 'Recevoir une affirmation de soutien' },
-      { name: '/reset', value: 'Réinitialiser tes données' },
+      { name: '/reset', value: 'Réinitialiser complètement tes données' },
       { name: '/aide', value: 'Afficher cette aide' },
     )
     .setFooter({ text: 'Tu vas y arriver ! Je crois en toi ! 🌟' });
@@ -236,6 +311,9 @@ client.on('interactionCreate', async (interaction) => {
         break;
       case 'stats':
         await handleStats(interaction);
+        break;
+      case 'changer-mon-objectif':
+        await handleChangeGoal(interaction);
         break;
       case 'affirmation':
         await handleAffirmation(interaction);

@@ -23,8 +23,9 @@ Mini bot sans prétention pour commu pleurant un peu le Nano sans vouloir monter
 - `/objectif [nombre]` - Définir votre objectif mensuel de mots
 - `/mots [nombre]` - Enregistrer vos mots écrits (même si c'est 0 !)
 - `/stats` - Consulter votre progression
+- `/changer-mon-objectif [nombre]` - Changer votre objectif en cours de route (avec détection automatique si vous l'aviez atteint)
 - `/affirmation` - Recevoir un message de soutien
-- `/reset` - Réinitialiser vos données
+- `/reset` - Réinitialiser complètement vos données
 - `/aide` - Afficher l'aide
 
 ### Fonctionnalités automatiques
@@ -45,6 +46,9 @@ Vous savez faire.
 3. Importez ce repository depuis GitHub
 4. Ajoutez les variables d'environnement (DISCORD_TOKEN, DISCORD_CLIENT_ID, CHANNEL_ID, NOTIFICATION_HOUR, NOTIFICATION_MINUTE)
 5. Lancez le déploiement automatique
+
+**⚠️ IMPORTANT pour l'invitation du bot :**
+Ne pas utiliser "Clic droit → Ajouter l'application" ! Cela ajoute uniquement les commandes, pas le bot. Utilisez le lien d'invitation OAuth2 avec les scopes `bot` + `applications.commands`. Voir `DEPLOIEMENT_RAILWAY.md` pour les détails.
 
 ## État du projet
 
